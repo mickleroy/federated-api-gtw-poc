@@ -1,10 +1,9 @@
 name: SonarCloud Analysis
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   sonarcloud:
@@ -32,5 +31,5 @@ jobs:
         with:
           args: >
             -Dsonar.organization=${{ github.repository_owner }}
-            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+            -Dsonar.projectKey=${{ github.event.repository.name }}
             -Dsonar.sources=.
