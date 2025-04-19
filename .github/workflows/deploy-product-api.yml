@@ -1,13 +1,13 @@
 name: Deploy Product API
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apis/product-api/**'
-      - 'api-gateway/lib/product-api-stack.ts'
-      - '.github/workflows/deploy-product-api.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'apis/product-api/**'
+  #     - 'api-gateway/lib/product-api-stack.ts'
+  #     - '.github/workflows/deploy-product-api.yml'
   workflow_dispatch:
 
 jobs:

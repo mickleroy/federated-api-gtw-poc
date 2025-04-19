@@ -1,13 +1,13 @@
 name: Deploy Customer API
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'apis/customer-api/**'
-      - 'api-gateway/lib/customer-api-stack.ts'
-      - '.github/workflows/deploy-customer-api.yml'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'apis/customer-api/**'
+  #     - 'api-gateway/lib/customer-api-stack.ts'
+  #     - '.github/workflows/deploy-customer-api.yml'
   workflow_dispatch:
 
 jobs:
