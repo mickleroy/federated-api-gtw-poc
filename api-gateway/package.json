@@ -1,0 +1,25 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "combine-specs": "ts-node scripts/combine-specs.ts",
+    "deploy:gateway": "chmod +x scripts/deploy-gateway.sh && ./scripts/deploy-gateway.sh"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.11.19",
+    "aws-cdk": "^2.126.0",
+    "js-yaml": "^4.1.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.126.0",
+    "constructs": "^10.3.0",
+    "source-map-support": "^0.5.21"
+  }
+} 

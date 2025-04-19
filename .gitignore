@@ -1,0 +1,6 @@
+node_modules
+.env
+*.d.ts
+*.js
+cdk.out
+api-gateway/generated
