@@ -17,6 +17,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:${stageVariables.region}:lambda:path/2015-03-31/functions/${stageVariables.productLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: aws_proxy
     post:
       summary: Create product
       operationId: createProduct
@@ -32,6 +37,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:${stageVariables.region}:lambda:path/2015-03-31/functions/${stageVariables.productLambdaFunctionName}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
 components:
   schemas:
     Product:

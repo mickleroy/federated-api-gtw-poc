@@ -4,8 +4,10 @@
 PRODUCT_ARN=$(aws cloudformation describe-stacks --stack-name ProductApiStack --query 'Stacks[0].Outputs[?OutputKey==`ProductLambdaArn`].OutputValue' --output text)
 CUSTOMER_ARN=$(aws cloudformation describe-stacks --stack-name CustomerApiStack --query 'Stacks[0].Outputs[?OutputKey==`CustomerLambdaArn`].OutputValue' --output text)
 
-export PRODUCT_LAMBDA_ARN=$PRODUCT_ARN
-export CUSTOMER_LAMBDA_ARN=$CUSTOMER_ARN
+# Extract function names from ARNs
+# ARN format: arn:aws:lambda:region:account:function:functionName
+PRODUCT_FUNCTION_NAME=$(echo $PRODUCT_ARN | cut -d':' -f7)
+CUSTOMER_FUNCTION_NAME=$(echo $CUSTOMER_ARN | cut -d':' -f7)
 
 # Run the OpenAPI spec generation
 npm run combine-specs
@@ -13,5 +15,5 @@ npm run combine-specs
 # Change to api-gateway directory
 cd "$(dirname "$0")/.."
 
-# Deploy the API Gateway with context values
-cdk deploy --context productLambdaArn=$PRODUCT_ARN --context customerLambdaArn=$CUSTOMER_ARN 
+# Deploy the API Gateway with function names
+cdk deploy --context productLambdaFunctionName=$PRODUCT_FUNCTION_NAME --context customerLambdaFunctionName=$CUSTOMER_FUNCTION_NAME 

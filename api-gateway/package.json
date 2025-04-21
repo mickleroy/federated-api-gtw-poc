@@ -6,7 +6,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk",
-    "combine-specs": "ts-node scripts/combine-specs.ts",
+    "combine-specs": "ts-node scripts/combine-openapi.ts",
     "deploy:gateway": "chmod +x scripts/deploy-gateway.sh && ./scripts/deploy-gateway.sh"
   },
   "devDependencies": {
