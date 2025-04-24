@@ -10,4 +10,5 @@ new ProductApiStack(app, 'ProductApiStack', {
     account: process.env.CDK_DEFAULT_ACCOUNT, 
     region: process.env.CDK_DEFAULT_REGION 
   },
+  vpcId: 'vpc-0cec8cf9870f78af6'
 }); 

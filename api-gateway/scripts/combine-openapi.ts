@@ -13,12 +13,6 @@ interface OpenAPISpec {
   };
 }
 
-function extractLambdaFunctionName(arn: string): string {
-  // ARN format: arn:aws:lambda:region:account:function:functionName
-  const parts = arn.split(':');
-  return parts[parts.length - 1];
-}
-
 function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
   const combined: OpenAPISpec = {
     openapi: '3.0.0',

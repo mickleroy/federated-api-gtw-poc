@@ -1,0 +1,9 @@
+_format_version: "1.0"
+
+patches:
+  - selectors:
+    - $.services[?(@.name=="customer-api")]
+    values:
+      host: customer-alb-dns
+      port: 80
+      protocol: http

@@ -3,6 +3,11 @@ info:
   title: Product API
   version: 1.0.0
   description: API for managing products
+
+servers:
+- url: https://api.acme.com
+  description: Acme API Server
+
 paths:
   /products:
     get:
@@ -18,10 +23,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
       x-amazon-apigateway-integration:
-        uri: arn:aws:apigateway:${stageVariables.region}:lambda:path/2015-03-31/functions/${stageVariables.productLambdaFunctionName}/invocations
+        uri: http://${stageVariables.productAlbDns}/products
         passthroughBehavior: when_no_match
         httpMethod: GET
-        type: aws_proxy
+        type: http_proxy
+        connectionType: VPC_LINK
+        connectionId: ${stageVariables.vpcLinkId}
     post:
       summary: Create product
       operationId: createProduct
@@ -38,10 +45,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
       x-amazon-apigateway-integration:
-        uri: arn:aws:apigateway:${stageVariables.region}:lambda:path/2015-03-31/functions/${stageVariables.productLambdaFunctionName}/invocations
+        uri: http://${stageVariables.productAlbDns}/products
         passthroughBehavior: when_no_match
         httpMethod: POST
-        type: aws_proxy
+        type: http_proxy
+        connectionType: VPC_LINK
+        connectionId: ${stageVariables.vpcLinkId}
 components:
   schemas:
     Product:

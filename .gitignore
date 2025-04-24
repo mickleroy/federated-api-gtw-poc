@@ -4,3 +4,5 @@ node_modules
 *.js
 cdk.out
 api-gateway/generated
+kong/generated
+kong/.kong-env

@@ -1,46 +1,131 @@
 import * as cdk from 'aws-cdk-lib';
-import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
-import * as lambdaCore from 'aws-cdk-lib/aws-lambda';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as path from 'path';
-import * as iam from 'aws-cdk-lib/aws-iam';
+
+interface ProductApiStackProps extends cdk.StackProps {
+  vpcId: string;
+}
 
 export class ProductApiStack extends cdk.Stack {
-  public readonly lambdaFunction: lambda.NodejsFunction;
+  public readonly alb: elbv2.ApplicationLoadBalancer;
+  public readonly table: dynamodb.Table;
+  public readonly securityGroup: ec2.SecurityGroup;
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.App, id: string, props: ProductApiStackProps) {
     super(scope, id, props);
 
+    // Get VPC from ID
+    const vpc = ec2.Vpc.fromLookup(this, 'VPC', {
+      vpcId: props.vpcId
+    });
+
     // Create DynamoDB table
-    const productsTable = new dynamodb.Table(this, 'ProductsTable', {
+    this.table = new dynamodb.Table(this, 'ProductsTable', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // NOT recommended for production
     });
 
-    // Create Lambda function
-    this.lambdaFunction = new lambda.NodejsFunction(this, 'ProductLambda', {
-      runtime: lambdaCore.Runtime.NODEJS_20_X,
-      entry: path.join(__dirname, '../src/handler.ts'),
-      handler: 'handler',
+    // Create Security Group for ALB
+    this.securityGroup = new ec2.SecurityGroup(this, 'ProductAlbSecurityGroup', {
+      vpc: vpc,
+      description: 'Security group for Product API ALB',
+      allowAllOutbound: true
+    });
+
+    // Allow inbound HTTP traffic
+    this.securityGroup.addIngressRule(
+      ec2.Peer.ipv4(vpc.vpcCidrBlock),
+      ec2.Port.tcp(80),
+      'Allow HTTP traffic from within VPC'
+    );
+
+    // Create ALB
+    this.alb = new elbv2.ApplicationLoadBalancer(this, 'ProductAlb', {
+      vpc: vpc,
+      internetFacing: false,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroup: this.securityGroup
+    });
+
+    // Create ECS Cluster
+    const cluster = new ecs.Cluster(this, 'ProductCluster', {
+      vpc: vpc
+    });
+
+    // Create ECS Task Definition
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'ProductTaskDef', {
+      memoryLimitMiB: 512,
+      cpu: 256,
+      runtimePlatform: {
+        cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        operatingSystemFamily: ecs.OperatingSystemFamily.LINUX
+      }
+    });
+
+    // Add container to task definition
+    taskDefinition.addContainer('ProductContainer', {
+      image: ecs.ContainerImage.fromAsset(path.join(__dirname, '../')),
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'product-api' }),
       environment: {
-        PRODUCTS_TABLE: productsTable.tableName,
+        TABLE_NAME: this.table.tableName,
+        PORT: '3000'
+      }
+    }).addPortMappings({
+      containerPort: 3000
+    });
+
+    // Create ECS Service
+    const service = new ecs.FargateService(this, 'ProductService', {
+      cluster,
+      taskDefinition,
+      desiredCount: 2,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS
       },
+      securityGroups: [
+        new ec2.SecurityGroup(this, 'ProductServiceSecurityGroup', {
+          vpc: vpc,
+          description: 'Security group for Product API ECS Service',
+          allowAllOutbound: true
+        })
+      ]
     });
 
-    // Grant permissions
-    productsTable.grantReadWriteData(this.lambdaFunction);
-
-    // Allow API Gateway to invoke the Lambda
-    this.lambdaFunction.addPermission('ApiGatewayInvoke', {
-      principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      action: 'lambda:InvokeFunction',
+    // Create Target Group
+    const targetGroup = new elbv2.ApplicationTargetGroup(this, 'ProductTargetGroup', {
+      vpc: vpc,
+      port: 3000,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+      targetType: elbv2.TargetType.IP,
+      healthCheck: {
+        path: '/health',
+        interval: cdk.Duration.seconds(30)
+      }
     });
 
-    // Output the Lambda ARN for reference
-    new cdk.CfnOutput(this, 'ProductLambdaArn', {
-      value: this.lambdaFunction.functionArn,
-      description: 'Product Lambda ARN',
+    // Add listener to ALB
+    this.alb.addListener('ProductListener', {
+      port: 80,
+      defaultTargetGroups: [targetGroup]
+    });
+
+    // Allow ALB to access ECS service
+    service.attachToApplicationTargetGroup(targetGroup);
+
+    // Grant ECS task permissions to access DynamoDB
+    this.table.grantReadWriteData(taskDefinition.taskRole);
+
+    // Output ALB DNS name and ARN
+    new cdk.CfnOutput(this, 'ProductAlbDns', {
+      value: this.alb.loadBalancerDnsName
+    });
+
+    new cdk.CfnOutput(this, 'ProductAlbArn', {
+      value: this.alb.loadBalancerArn
     });
   }
 } 

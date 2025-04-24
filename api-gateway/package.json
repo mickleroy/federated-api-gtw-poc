@@ -7,7 +7,7 @@
     "watch": "tsc -w",
     "cdk": "cdk",
     "combine-specs": "ts-node scripts/combine-openapi.ts",
-    "deploy:gateway": "chmod +x scripts/deploy-gateway.sh && ./scripts/deploy-gateway.sh"
+    "deploy:gateway": "cdk deploy"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
