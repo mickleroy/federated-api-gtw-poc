@@ -1,0 +1,32 @@
+_format_version: "3.0"
+services:
+- host: Custom-Custo-WpQ7HIISI2xh-1913972753.ap-southeast-2.elb.amazonaws.com
+  id: 4356ae44-a3f2-5214-921a-669edfee2562
+  name: customer-api
+  path: /
+  plugins: []
+  port: 80
+  protocol: http
+  routes:
+  - id: f72aa9dc-4d95-5b54-8a62-f4e861fc2ec6
+    methods:
+    - GET
+    name: customer-api_listcustomers
+    paths:
+    - ~/customers$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: 1a2afcb6-b4c2-5ef5-8a6e-3304a251743e
+    methods:
+    - POST
+    name: customer-api_createcustomer
+    paths:
+    - ~/customers$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  tags: []
+upstreams: []

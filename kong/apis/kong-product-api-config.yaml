@@ -1,0 +1,32 @@
+_format_version: "3.0"
+services:
+- host: Produc-Produ-mlS2Ys1PnOVA-1576223476.ap-southeast-2.elb.amazonaws.com
+  id: 50c377cc-227a-5a73-bded-1e3c3af5e765
+  name: product-api
+  path: /
+  plugins: []
+  port: 80
+  protocol: http
+  routes:
+  - id: 3995a71b-2f3f-5914-a9c5-c069ecad51a6
+    methods:
+    - GET
+    name: product-api_listproducts
+    paths:
+    - ~/products$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: 8e723b1d-b957-57e4-8276-e9fe0e7f6a15
+    methods:
+    - POST
+    name: product-api_createproduct
+    paths:
+    - ~/products$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  tags: []
+upstreams: []

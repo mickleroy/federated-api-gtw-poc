@@ -28,14 +28,21 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
     }
   };
 
-  const apis = fs.readdirSync(apisDir);
+  const files = fs.readdirSync(apisDir);
+  const yamlFiles = files.filter(file => file.endsWith('.yaml') || file.endsWith('.yml'));
   
-  for (const api of apis) {
-    const specPath = path.join(apisDir, api, 'openapi.yaml');
-    if (fs.existsSync(specPath)) {
+  for (const file of yamlFiles) {
+    const specPath = path.join(apisDir, file);
+    try {
       const spec = yaml.load(fs.readFileSync(specPath, 'utf8')) as OpenAPISpec;
       
-      const pathPrefix = `/${api.replace('-api', '')}`;
+      // Skip if not a valid OpenAPI spec
+      if (!spec.openapi || !spec.paths) {
+        console.warn(`Skipping ${file} - not a valid OpenAPI specification`);
+        continue;
+      }
+      
+      const pathPrefix = '';
       const prefixedPaths = Object.entries(spec.paths).reduce((acc, [path, methods]) => {
         acc[`${pathPrefix}${path}`] = methods;
         return acc;
@@ -57,6 +64,8 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
           };
         }
       }
+    } catch (error) {
+      console.warn(`Error processing ${file}:`, error);
     }
   }
 
@@ -65,7 +74,7 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
 
 try {
   // Generate combined OpenAPI spec
-  const apisDir = path.join(__dirname, '../../apis');
+  const apisDir = path.join(__dirname, '../apis');
   if (!fs.existsSync(apisDir)) {
     throw new Error(`APIs directory not found at ${apisDir}`);
   }
@@ -79,40 +88,9 @@ try {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // Get Lambda ARNs from environment variables
-  const productLambdaArn = process.env.PRODUCT_LAMBDA_ARN;
-  const customerLambdaArn = process.env.CUSTOMER_LAMBDA_ARN;
-
-  if (!productLambdaArn || !customerLambdaArn) {
-    throw new Error('Lambda ARNs not provided. Please set PRODUCT_LAMBDA_ARN and CUSTOMER_LAMBDA_ARN environment variables.');
-  }
-
-  // Add AWS API Gateway extensions with actual Lambda ARNs
-  const awsExtendedSpec = {
-    ...combined,
-    paths: Object.entries(combined.paths).reduce((acc, [path, methods]) => {
-      const service = path.split('/')[1];
-      const lambdaArn = service === 'product' ? productLambdaArn : customerLambdaArn;
-      
-      acc[path] = Object.entries(methods as Record<string, any>).reduce((methodAcc, [method, config]) => {
-        methodAcc[method] = {
-          ...config,
-          'x-amazon-apigateway-integration': {
-            uri: `arn:aws:apigateway:${process.env.AWS_REGION || 'ap-southeast-2'}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations`,
-            passthroughBehavior: 'when_no_match',
-            httpMethod: 'POST',
-            type: 'aws_proxy'
-          }
-        };
-        return methodAcc;
-      }, {} as Record<string, any>);
-      return acc;
-    }, {} as Record<string, any>)
-  };
-
   // Write the combined spec to a file
   const outputPath = path.join(outputDir, 'combined.yaml');
-  fs.writeFileSync(outputPath, yaml.dump(awsExtendedSpec));
+  fs.writeFileSync(outputPath, yaml.dump(combined));
   console.log(`Combined OpenAPI specification written to ${outputPath}`);
 } catch (error) {
   console.error('Error generating OpenAPI spec:', error);
