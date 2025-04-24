@@ -1,22 +1,21 @@
 {
   "name": "api-gtw-poc",
   "version": "1.0.0",
-  "description": "API Gateway POC with multiple NodeJS APIs",
+  "description": "Federated API Gateway POC with multiple NodeJS APIs",
   "scripts": {
-    "combine-specs": "ts-node api-gateway/scripts/combine-openapi.ts",
-    "deploy:all": "npm run deploy:apis && npm run deploy:gateway",
+    "deploy:all": "npm run deploy:base && npm run deploy:apis && npm run deploy:gateway && npm run deploy:kong",
     "deploy:apis": "npm run deploy:product && npm run deploy:customer",
-    "deploy:gateway": "chmod +x api-gateway/scripts/deploy-gateway.sh && ./api-gateway/scripts/deploy-gateway.sh",
-    "deploy:product": "cd apis/product-api && cdk deploy",
-    "deploy:customer": "cd apis/customer-api && cdk deploy",
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces",
-    "generate-types": "openapi-typescript apis/**/openapi.yaml --output shared/types/"
+    "deploy:gateway": "cd api-gateway && npm run deploy",
+    "deploy:product": "cd apis/product-api && npm run deploy",
+    "deploy:customer": "cd apis/customer-api && npm run deploy",
+    "deploy:base": "cd base-infra && npm run deploy",
+    "deploy:kong": "cd kong/scripts && ./deploy.sh",
+    "build": "npm run build --workspaces"
   },
   "workspaces": [
     "apis/*",
     "api-gateway",
-    "shared/*"
+    "base-infra/*"
   ],
   "devDependencies": {
     "@types/node": "^20.11.19",

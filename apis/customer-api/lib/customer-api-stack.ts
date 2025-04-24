@@ -5,21 +5,23 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as path from 'path';
 
-interface CustomerApiStackProps extends cdk.StackProps {
-  vpcId: string;
-}
-
 export class CustomerApiStack extends cdk.Stack {
   public readonly alb: elbv2.ApplicationLoadBalancer;
   public readonly table: dynamodb.Table;
   public readonly securityGroup: ec2.SecurityGroup;
 
-  constructor(scope: cdk.App, id: string, props: CustomerApiStackProps) {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // Get VPC ID from context
+    const vpcId = this.node.tryGetContext('vpcId');
+    if (!vpcId) {
+      throw new Error('VPC ID must be provided in CDK context. Use -c vpcId=<your-vpc-id> when deploying');
+    }
 
     // Get VPC from ID
     const vpc = ec2.Vpc.fromLookup(this, 'VPC', {
-      vpcId: props.vpcId
+      vpcId: vpcId
     });
 
     // Create DynamoDB table

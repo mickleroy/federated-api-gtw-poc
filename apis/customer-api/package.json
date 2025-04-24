@@ -7,7 +7,8 @@
     "build:cdk": "tsc -p tsconfig.json",
     "test": "jest",
     "cdk": "cdk",
-    "deploy": "npm run build:cdk && cdk deploy"
+    "deploy": "npm run build:cdk && cdk deploy --context vpcId=$VPC_ID && cd scripts && npm run publish",
+    "publish": "cd scripts && ./publish.sh"
   },
   "dependencies": {
     "aws-sdk": "^2.1550.0",

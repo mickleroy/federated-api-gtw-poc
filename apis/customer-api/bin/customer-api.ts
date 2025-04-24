@@ -9,6 +9,5 @@ new CustomerApiStack(app, 'CustomerApiStack', {
   env: { 
     account: process.env.CDK_DEFAULT_ACCOUNT, 
     region: process.env.CDK_DEFAULT_REGION 
-  },
-  vpcId: 'vpc-0cec8cf9870f78af6'
+  }
 }); 

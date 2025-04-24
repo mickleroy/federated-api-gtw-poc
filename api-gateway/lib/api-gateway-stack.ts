@@ -6,15 +6,21 @@ export class ApiGatewayStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const productAlbDns = this.node.tryGetContext('productAlbDns');
+    const customerAlbDns = this.node.tryGetContext('customerAlbDns');
+
+    if (!productAlbDns || !customerAlbDns) {
+      throw new Error('productAlbDns and customerAlbDns are required in context');
+    }
+
     // Create REST API from OpenAPI specification
-    // FIXME: RestApi cannot route to private ALBs. Need to use public ALBs or HttpApi with VPC Link
     const api = new apigateway.SpecRestApi(this, 'FederatedApi', {
-      apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, '../openapi.yaml')),
+      apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, '../generated/combined.yaml')),
       deployOptions: {
         stageName: 'prod',
         variables: {
-          productAlbDns: 'product-alb-dns',
-          customerAlbDns: 'customer-alb-dns',
+          productAlbDns,
+          customerAlbDns,
           environment: 'prod'
         }
       }

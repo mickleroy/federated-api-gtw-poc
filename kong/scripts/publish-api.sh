@@ -1,20 +1,20 @@
 #!/bin/bash
 #
-# This script publishes API configurations to Kong
+# This script publishes OpenAPI specifications for Kong
 #
 # Usage:
-#   ./publish-api.sh --name <api-name> --patches <patches-file> --spec <openapi-file>
+#   ./publish-api.sh --name <api-name> --spec <openapi-file> --patches <patches-file>
 #
 # Arguments:
 #   --name      Required. The name of the API (e.g. "customer-api", "product-api")
-#   --patches   Optional. Path to a YAML file containing Kong-specific configuration patches
 #   --spec      Required. Path to the OpenAPI/Swagger specification file
-#
+#   --patches   Optional. Path to a YAML file containing Kong-specific configuration patches
+
 # Example:
 #   ./publish-api.sh \
 #     --name customer-api \
-#     --patches ./kong/patches.yaml \
-#     --spec ./openapi.yaml
+#     --spec ./openapi.yaml \
+#     --patches ./kong/patches.yaml
 #
 # The script will:
 # 1. Validate the required arguments are provided

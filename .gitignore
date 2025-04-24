@@ -5,4 +5,5 @@ node_modules
 cdk.out
 api-gateway/generated
 kong/generated
-kong/.kong-env
+.env
+cdk.context.json

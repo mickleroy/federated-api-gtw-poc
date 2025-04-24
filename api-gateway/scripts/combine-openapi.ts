@@ -28,14 +28,21 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
     }
   };
 
-  const apis = fs.readdirSync(apisDir);
+  const files = fs.readdirSync(apisDir);
+  const yamlFiles = files.filter(file => file.endsWith('.yaml') || file.endsWith('.yml'));
   
-  for (const api of apis) {
-    const specPath = path.join(apisDir, api, 'openapi.yaml');
-    if (fs.existsSync(specPath)) {
+  for (const file of yamlFiles) {
+    const specPath = path.join(apisDir, file);
+    try {
       const spec = yaml.load(fs.readFileSync(specPath, 'utf8')) as OpenAPISpec;
       
-      const pathPrefix = `/${api.replace('-api', '')}`;
+      // Skip if not a valid OpenAPI spec
+      if (!spec.openapi || !spec.paths) {
+        console.warn(`Skipping ${file} - not a valid OpenAPI specification`);
+        continue;
+      }
+      
+      const pathPrefix = '';
       const prefixedPaths = Object.entries(spec.paths).reduce((acc, [path, methods]) => {
         acc[`${pathPrefix}${path}`] = methods;
         return acc;
@@ -57,6 +64,8 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
           };
         }
       }
+    } catch (error) {
+      console.warn(`Error processing ${file}:`, error);
     }
   }
 
@@ -65,7 +74,7 @@ function combineOpenAPISpecs(apisDir: string): OpenAPISpec {
 
 try {
   // Generate combined OpenAPI spec
-  const apisDir = path.join(__dirname, '../../apis');
+  const apisDir = path.join(__dirname, '../apis');
   if (!fs.existsSync(apisDir)) {
     throw new Error(`APIs directory not found at ${apisDir}`);
   }

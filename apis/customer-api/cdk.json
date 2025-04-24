@@ -33,6 +33,5 @@
       "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
       "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
       "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true
-    },
-    "outdir": "infrastructure/cdk.out"
+    }  
   } 
