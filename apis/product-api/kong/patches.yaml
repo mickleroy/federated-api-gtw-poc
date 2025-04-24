@@ -4,6 +4,6 @@ patches:
   - selectors:
     - $.services[?(@.name=="product-api")]
     values:
-      host: product-alb-dns
+      host: Produc-Produ-mlS2Ys1PnOVA-1576223476.ap-southeast-2.elb.amazonaws.com
       port: 80
       protocol: http

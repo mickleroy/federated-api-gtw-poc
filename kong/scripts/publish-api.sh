@@ -72,7 +72,7 @@ KONG_DIR="$(dirname "$SCRIPT_DIR")"
 WORKSPACE_ROOT="$(dirname "$KONG_DIR")"
 
 OUTPUT_FILE="${KONG_DIR}/apis/kong-${API_NAME}-config.yaml"
-
+LINTING_RULES="${WORKSPACE_ROOT}/kong/linting-rules.yaml"
 # Check if OpenAPI file exists
 if [ ! -f "$OPENAPI_FILE" ]; then
     echo "Error: OpenAPI file not found at $OPENAPI_FILE"
@@ -98,5 +98,8 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 echo "Generating Kong configuration for $API_NAME..."
 deck file openapi2kong -s "$OPENAPI_FILE" | \
 $PATCHES_CMD -o "$OUTPUT_FILE"
+
+echo "Linting Kong configuration for $API_NAME..."
+deck file lint -s "$OUTPUT_FILE" "$LINTING_RULES"
 
 echo "Successfully generated Kong configuration at $OUTPUT_FILE"

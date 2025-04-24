@@ -38,16 +38,16 @@ export class ProductApiStack extends cdk.Stack {
 
     // Allow inbound HTTP traffic
     this.securityGroup.addIngressRule(
-      ec2.Peer.ipv4(vpc.vpcCidrBlock),
+      ec2.Peer.anyIpv4(),
       ec2.Port.tcp(80),
-      'Allow HTTP traffic from within VPC'
+      'Allow HTTP traffic from anywhere'
     );
 
     // Create ALB
     this.alb = new elbv2.ApplicationLoadBalancer(this, 'ProductAlb', {
       vpc: vpc,
-      internetFacing: false,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      internetFacing: true,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       securityGroup: this.securityGroup
     });
 
@@ -103,7 +103,7 @@ export class ProductApiStack extends cdk.Stack {
       targetType: elbv2.TargetType.IP,
       healthCheck: {
         path: '/health',
-        interval: cdk.Duration.seconds(30)
+        interval: cdk.Duration.seconds(10)
       }
     });
 
