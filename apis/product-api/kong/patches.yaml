@@ -4,6 +4,6 @@ patches:
   - selectors:
     - $.services[?(@.name=="product-api")]
     values:
-      host: Produc-Produ-mlS2Ys1PnOVA-1576223476.ap-southeast-2.elb.amazonaws.com
+      host: ${{ env "DECK_PRODUCT_DNS" }}
       port: 80
       protocol: http
