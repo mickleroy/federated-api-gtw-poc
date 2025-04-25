@@ -24,7 +24,11 @@ services:
     name: customer-api_createcustomer
     paths:
     - ~/customers$
-    plugins: []
+    plugins:
+    - config:
+        key_names:
+        - apikey
+      name: key-auth
     regex_priority: 200
     strip_path: false
     tags: []

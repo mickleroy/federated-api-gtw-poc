@@ -1,0 +1,6 @@
+_format_version: "3.0"
+
+consumers:
+  - keyauth_credentials:
+    - key: top_secret_key
+    username: service-user

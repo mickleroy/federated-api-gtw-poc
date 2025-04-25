@@ -30,6 +30,8 @@ paths:
     post:
       summary: Create customer
       operationId: createCustomer
+      security:
+        - keyAuth: []
       requestBody:
         content:
           application/json:
@@ -42,12 +44,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
+        '401':
+          description: Unauthorized - Invalid or missing API key
       x-amazon-apigateway-integration:
         uri: http://${stageVariables.customerAlbDns}/customers
         passthroughBehavior: when_no_match
         httpMethod: POST
         type: http_proxy
 components:
+  securitySchemes:
+    keyAuth:
+      type: apiKey
+      in: header
+      name: apikey
   schemas:
     Customer:
       type: object

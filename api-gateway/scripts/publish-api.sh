@@ -22,6 +22,12 @@
 # Exit on error
 set -e
 
+# Set the color variable
+green='\033[0;32m'
+red='\033[0;31m'
+# Clear the color after that
+clear='\033[0m'
+
 # Default values
 API_NAME=""
 OPENAPI_FILE=""
@@ -47,13 +53,13 @@ done
 
 # Validate required arguments
 if [ -z "$API_NAME" ]; then
-    echo "Error: --name argument is required"
+    echo -e "${red}Error: --name argument is required${clear}"
     echo "Usage: $0 --name <api-name> --spec <openapi-file>"
     exit 1
 fi
 
 if [ -z "$OPENAPI_FILE" ]; then
-    echo "Error: --spec argument is required"
+    echo -e "${red}Error: --spec argument is required${clear}"
     echo "Usage: $0 --name <api-name> --spec <openapi-file>"
     exit 1
 fi
@@ -66,7 +72,7 @@ WORKSPACE_ROOT="$(dirname "$API_DIR")"
 OUTPUT_FILE="${API_DIR}/apis/api-${API_NAME}-config.yaml"
 # Check if OpenAPI file exists
 if [ ! -f "$OPENAPI_FILE" ]; then
-    echo "Error: OpenAPI file not found at $OPENAPI_FILE"
+    echo -e "${red}Error: OpenAPI file not found at $OPENAPI_FILE${clear}"
     exit 1
 fi
 
@@ -80,4 +86,4 @@ cp "$OPENAPI_FILE" "$OUTPUT_FILE"
 echo "Linting OpenAPI configuration for $API_NAME..."
 # TODO: Implement linting
 
-echo "Successfully generated AWS API Gateway configuration at $OUTPUT_FILE"
+echo -e "${green}Successfully generated AWS API Gateway configuration at $OUTPUT_FILE${clear}"
