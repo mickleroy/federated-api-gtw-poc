@@ -122,9 +122,14 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 # Run deck commands
 echo "Generating Kong configuration for $API_NAME..."
-deck file openapi2kong -s "$OPENAPI_FILE" | \
-$PATCHES_CMD | \
-$PLUGINS_CMD -o "$OUTPUT_FILE"
+if [ -n "$PLUGINS_CMD" ]; then
+    deck file openapi2kong -s "$OPENAPI_FILE" | \
+    $PATCHES_CMD | \
+    $PLUGINS_CMD -o "$OUTPUT_FILE"
+else
+    deck file openapi2kong -s "$OPENAPI_FILE" | \
+    $PATCHES_CMD -o "$OUTPUT_FILE"
+fi
 
 echo "Linting Kong configuration for $API_NAME..."
 deck file lint -s "$OUTPUT_FILE" "$LINTING_RULES"

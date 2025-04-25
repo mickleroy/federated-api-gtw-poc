@@ -1,6 +1,6 @@
 _format_version: "3.0"
 services:
-- host: Produc-Produ-mlS2Ys1PnOVA-1576223476.ap-southeast-2.elb.amazonaws.com
+- host: ${{ env "DECK_PRODUCT_DNS" }}
   id: 50c377cc-227a-5a73-bded-1e3c3af5e765
   name: product-api
   path: /

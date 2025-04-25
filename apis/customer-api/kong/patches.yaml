@@ -4,6 +4,6 @@ patches:
   - selectors:
     - $.services[?(@.name=="customer-api")]
     values:
-      host: Custom-Custo-WpQ7HIISI2xh-1913972753.ap-southeast-2.elb.amazonaws.com
+      host: ${{ env "DECK_CUSTOMER_DNS" }}
       port: 80
       protocol: http

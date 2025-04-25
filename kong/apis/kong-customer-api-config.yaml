@@ -1,6 +1,6 @@
 _format_version: "3.0"
 services:
-- host: Custom-Custo-WpQ7HIISI2xh-1913972753.ap-southeast-2.elb.amazonaws.com
+- host: ${{ env "DECK_CUSTOMER_DNS" }}
   id: 4356ae44-a3f2-5214-921a-669edfee2562
   name: customer-api
   path: /
