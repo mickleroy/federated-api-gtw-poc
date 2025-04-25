@@ -1,0 +1,10 @@
+_format_version: "3.0"
+
+add-plugins:
+  - selectors:
+      - $.services[0].routes[?(@.name=='customer-api_createcustomer')]
+    overwrite: true
+    plugins:
+    - name: key-auth
+      config:
+        key_names: ["apikey"]

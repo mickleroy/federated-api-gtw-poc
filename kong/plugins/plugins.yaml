@@ -1,0 +1,11 @@
+_format_version: "3.0"
+
+# Global plugins
+
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 60
+      policy: local
+      limit_by: ip
+      hide_client_headers: false

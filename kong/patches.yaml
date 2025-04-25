@@ -10,3 +10,9 @@ patches:
       default-jwt:
         key_claim_name: "iss"
         secret_is_base64: false
+      default-key-auth:
+        key_names: ["apikey"]
+        hide_credentials: true
+        key_in_body: false
+        key_in_header: true
+        key_in_query: false
