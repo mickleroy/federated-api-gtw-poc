@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Kong API Publishing Script
+# =========================
+#
 # This script publishes OpenAPI specifications for Kong
 #
 # Usage:

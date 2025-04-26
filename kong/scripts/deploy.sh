@@ -1,19 +1,46 @@
 #!/bin/bash
 #
-# This script deploys Kong API Gateway configuration by:
-# 1. Merging all API config files (*.yaml) from the apis/ directory into a single file
-# 2. Merging the combined API configs with platform base templates
-# 3. Applying any patches defined in patches.yaml
-# 4. Previewing changes that would be made to Kong
-# 5. Syncing the final configuration to Kong Gateway (unless --preview is specified)
+# Kong API Gateway Deployment Script
+# ==================================
 #
-# Required environment variables:
-# - KONG_CONTROL_PLANE: Name of the Kong control plane
-# - KONG_TOKEN: Authentication token for Kong
-# - KONG_ADDR: Address of the Kong Gateway instance
+# This script automates the deployment of Kong API Gateway configurations by following
+# a structured process of merging configurations, applying patches, and syncing with
+# the Kong Gateway instance.
 #
-# Optional arguments:
-# --preview: Only show the diff without syncing to the gateway
+# Usage:
+#   ./deploy.sh [--preview]
+#
+# Options:
+#   --preview    Only show the diff without syncing to the gateway
+#
+# Environment Variables:
+#   Required:
+#   - KONG_CONTROL_PLANE    Name of the Kong control plane
+#   - KONG_TOKEN            Authentication token for Kong
+#   - KONG_ADDR             Address of the Kong Gateway instance
+#
+# Process:
+# 1. Merges all API config files (*.yaml) from the apis/ directory into a single file
+# 2. Merges the combined API configs with platform base templates
+# 3. Applies any patches defined in patches.yaml
+# 4. Previews changes that would be made to Kong
+# 5. Syncs the final configuration to Kong Gateway (unless --preview is specified)
+#
+# Example:
+#   export KONG_CONTROL_PLANE="my-control-plane"
+#   export KONG_TOKEN="your-auth-token"
+#   export KONG_ADDR="https://your-kong-address"
+#   ./deploy.sh --preview  # To preview changes
+#   ./deploy.sh            # To deploy changes
+#
+# Dependencies:
+#   - deck (Kong's declarative configuration tool)
+#   - bash
+#
+# Output:
+#   - Generated files are stored in the ../generated/ directory
+#   - kong-apis-combined.yaml: Combined API configurations
+#   - kong.yaml: Final configuration after all merges and patches
 
 # Parse command line arguments
 PREVIEW_MODE=false

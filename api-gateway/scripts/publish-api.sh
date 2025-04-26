@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# AWS API Gateway Publishing Script
+# ==================================
+#
 # This script publishes OpenAPI specifications for AWS API Gateway
 #
 # Usage:
