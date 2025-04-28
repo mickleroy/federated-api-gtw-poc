@@ -97,6 +97,9 @@ export class CustomerApiStack extends cdk.Stack {
       ]
     });
 
+    // Allow ECS service to access DynamoDB through VPC endpoint
+    service.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS traffic to DynamoDB VPC endpoint');
+
     // Create Target Group
     const targetGroup = new elbv2.ApplicationTargetGroup(this, 'CustomerTargetGroup', {
       vpc: vpc,

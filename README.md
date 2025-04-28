@@ -49,6 +49,7 @@ federated-api-gtw-poc/
 - Independent deployment of APIs and API Gateways
 - Kong API Gateway configuration from OpenAPI specs
 - Base infrastructure components for shared resources
+- Typescript types generation from OpenAPI specs
 
 ## Prerequisites
 
