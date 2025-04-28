@@ -21,6 +21,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
     "outDir": "dist"
   },
   "include": ["src/**/*"],

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { DynamoDB } from 'aws-sdk';
+import { components } from './generated/types';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -8,6 +9,10 @@ const port = process.env.PORT || 3000;
 // Initialize DynamoDB
 const dynamoDB = new DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME || 'Products';
+
+// Use the generated types
+type Product = components['schemas']['Product'];
+type CreateProductRequest = components['schemas']['ProductInput'];
 
 // Middleware
 app.use(cors());
@@ -29,8 +34,8 @@ app.get('/products', async (req: express.Request, res: express.Response) => {
 
 app.post('/products', async (req: express.Request, res: express.Response) => {
   try {
-    const { name, price, description } = req.body;
-    const product = {
+    const { name, price, description } = req.body as CreateProductRequest;
+    const product: Product = {
       id: Date.now().toString(),
       name,
       price,
