@@ -8,7 +8,8 @@
     "test": "jest",
     "cdk": "cdk",
     "deploy": "npm run build:cdk && cdk deploy --context vpcId=$VPC_ID && cd scripts && npm run publish",
-    "publish": "cd scripts && ./publish.sh"
+    "publish": "cd scripts && ./publish.sh",
+    "generate-types": "openapi-typescript openapi.yaml --output src/generated/types.d.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1550.0",
@@ -28,6 +29,7 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "openapi-typescript": "^6.7.4"
   }
 } 

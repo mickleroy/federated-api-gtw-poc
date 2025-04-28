@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { DynamoDB } from 'aws-sdk';
+import { components } from './generated/types';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -8,6 +9,10 @@ const port = process.env.PORT || 3000;
 // Initialize DynamoDB
 const dynamoDB = new DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.TABLE_NAME || 'Customers';
+
+// Use the generated types
+type Customer = components['schemas']['Customer'];
+type CreateCustomerRequest = components['schemas']['CustomerInput'];
 
 // Middleware
 app.use(cors());
@@ -29,8 +34,8 @@ app.get('/customers', async (req, res) => {
 
 app.post('/customers', async (req, res) => {
   try {
-    const { firstName, lastName, email } = req.body;
-    const customer = {
+    const { firstName, lastName, email } = req.body as CreateCustomerRequest;
+    const customer: Customer = {
       id: Date.now().toString(),
       firstName,
       lastName,
